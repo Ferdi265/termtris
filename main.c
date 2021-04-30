@@ -114,7 +114,7 @@ long long time_usec(void) {
     return time.tv_sec * 1000000LL + time.tv_usec;
 }
 
-long long time_rate = 500000;
+long long time_rate = 16666;
 long long time_now;
 struct timeval time_timeout;
 bool time_update_timeout(void) {
@@ -172,6 +172,8 @@ void loop(void) {
 #define LEN_RESTORE 3
 #define LEN_MOVE_TOP 4
 #define LEN_INFOBOX_LINE_END 9
+#define LEN_INPUT_CHAR 3
+#define LEN_INPUT_LINE (6 * 2 + 5 * LEN_INPUT_CHAR)
 char draw_buffer[
     LEN_CLEAR +
     (1 + 2 * TETRIS_COLUMNS + 1) * LEN_BOXCHAR + LEN_LINE_END +
@@ -184,6 +186,10 @@ char draw_buffer[
     (1 + INFOBOX_COLUMNS + 1) * LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
     LEN_BOXCHAR + INFOBOX_COLUMNS + LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
     (LEN_BOXCHAR + NEXTBOX_LEFT_OFFSET + LEN_BLOCK * NEXTBOX_COLUMNS + LEN_RESET + NEXTBOX_RIGHT_OFFSET + LEN_BOXCHAR + LEN_INFOBOX_LINE_END) * NEXTBOX_LINES +
+    (1 + INFOBOX_COLUMNS + 1) * LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
+    (1 + INFOBOX_COLUMNS + 1) * LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
+    LEN_BOXCHAR + INFOBOX_COLUMNS + LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
+    LEN_BOXCHAR + LEN_INPUT_LINE + LEN_BOXCHAR + LEN_INFOBOX_LINE_END +
     (1 + INFOBOX_COLUMNS + 1) * LEN_BOXCHAR +
     LEN_RESTORE + LEN_LINE_END
 ];
@@ -195,6 +201,11 @@ char * draw_next_offset;
 char * draw_score_offset;
 char * draw_lines_offset;
 char * draw_level_offset;
+char * draw_space_offset;
+char * draw_left_offset;
+char * draw_up_offset;
+char * draw_down_offset;
+char * draw_right_offset;
 void draw_init(void) {
     char * ptr = draw_buffer;
     APPEND(ptr, "\x1b[2J\x1b[0;0H", LEN_CLEAR);
@@ -263,6 +274,27 @@ void draw_init(void) {
     APPEND(ptr, "└", LEN_BOXCHAR);
     REPEAT(INFOBOX_COLUMNS, APPEND(ptr, "─", LEN_BOXCHAR));
     APPEND(ptr, "┘", LEN_BOXCHAR);
+    APPEND(ptr, "\x1b[1B\x1b[19D", LEN_INFOBOX_LINE_END);
+    APPEND(ptr, "┌", LEN_BOXCHAR);
+    REPEAT(INFOBOX_COLUMNS, APPEND(ptr, "─", LEN_BOXCHAR));
+    APPEND(ptr, "┐", LEN_BOXCHAR);
+    APPEND(ptr, "\x1b[1B\x1b[19D", LEN_INFOBOX_LINE_END);
+    APPEND(ptr, "│", LEN_BOXCHAR);
+    APPEND(ptr, "    I N P U T    ", INFOBOX_COLUMNS);
+    APPEND(ptr, "│", LEN_BOXCHAR);
+    APPEND(ptr, "\x1b[1B\x1b[19D", LEN_INFOBOX_LINE_END);
+    APPEND(ptr, "│", LEN_BOXCHAR);
+    draw_space_offset = ptr + 2;
+    draw_left_offset = ptr + 2 + 5;
+    draw_up_offset = ptr + 2 + 5 + 5;
+    draw_down_offset = ptr + 2 + 5 + 5 + 5;
+    draw_right_offset = ptr + 2 + 5 + 5 + 5 + 5;
+    APPEND(ptr, "  •  ←  ↑  →  ↓  ", LEN_INPUT_LINE);
+    APPEND(ptr, "│", LEN_BOXCHAR);
+    APPEND(ptr, "\x1b[1B\x1b[19D", LEN_INFOBOX_LINE_END);
+    APPEND(ptr, "└", LEN_BOXCHAR);
+    REPEAT(INFOBOX_COLUMNS, APPEND(ptr, "─", LEN_BOXCHAR));
+    APPEND(ptr, "┘", LEN_BOXCHAR);
     APPEND(ptr, "\x1b[u", LEN_RESTORE);
     APPEND(ptr, "\r\n", LEN_LINE_END);
 }
@@ -281,6 +313,11 @@ enum {
 unsigned int game_score;
 unsigned int game_lines;
 unsigned int game_level;
+bool game_pressed_space;
+bool game_pressed_left;
+bool game_pressed_up;
+bool game_pressed_right;
+bool game_pressed_down;
 unsigned char game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
 unsigned char next_buffer[NEXTBOX_LINES][NEXTBOX_COLUMNS];
 
@@ -316,6 +353,36 @@ void draw_update(void) {
                 ptr[1] = color;
             }
         }
+    }
+
+    if (game_pressed_space) {
+        memcpy(draw_space_offset, "•", LEN_INPUT_CHAR);
+    } else {
+        memcpy(draw_space_offset, " \x01\x01", LEN_INPUT_CHAR);
+    }
+
+    if (game_pressed_left) {
+        memcpy(draw_left_offset, "←", LEN_INPUT_CHAR);
+    } else {
+        memcpy(draw_left_offset, " \x01\x01", LEN_INPUT_CHAR);
+    }
+
+    if (game_pressed_up) {
+        memcpy(draw_up_offset, "↑", LEN_INPUT_CHAR);
+    } else {
+        memcpy(draw_up_offset, " \x01\x01", LEN_INPUT_CHAR);
+    }
+
+    if (game_pressed_down) {
+        memcpy(draw_down_offset, "↓", LEN_INPUT_CHAR);
+    } else {
+        memcpy(draw_down_offset, " \x01\x01", LEN_INPUT_CHAR);
+    }
+
+    if (game_pressed_right) {
+        memcpy(draw_right_offset, "→", LEN_INPUT_CHAR);
+    } else {
+        memcpy(draw_right_offset, " \x01\x01", LEN_INPUT_CHAR);
     }
 
     char sprintf_buf[8];
@@ -355,28 +422,27 @@ void game_init(void) {
 
 void game_tick(void) {
     draw_update();
-    //printf("TICK\r\n");
+    game_pressed_space = game_pressed_left = game_pressed_up = game_pressed_down = game_pressed_right = false;
 }
 
 void game_key(int key) {
     switch (key) {
         case KEY_UP:
-            //printf("UP\r\n");
+            game_pressed_up = true;
             break;
         case KEY_DOWN:
-            //printf("DOWN\r\n");
+            game_pressed_down = true;
             break;
         case KEY_RIGHT:
-            //printf("RIGHT\r\n");
+            game_pressed_right = true;
             break;
         case KEY_LEFT:
-            //printf("LEFT\r\n");
+            game_pressed_left = true;
             break;
         case KEY_SPACE:
-            //printf("SPACE\r\n");
+            game_pressed_space = true;
             break;
         case KEY_ESC:
-            //printf("ESC\r\n");
             raise(SIGINT);
             break;
     }
