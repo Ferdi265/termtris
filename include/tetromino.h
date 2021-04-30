@@ -11,6 +11,11 @@ typedef struct {
     int size;
 } tetromino_t;
 
+typedef struct {
+    char shape;
+    char rotation;
+} tetromino_id_t;
+
 enum {
     TETROMINO_I,
     TETROMINO_O,

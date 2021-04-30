@@ -19,7 +19,7 @@ void loop(void) {
         if (time_update_timeout()) {
             game_tick();
         } else {
-            int key = tty_key();
+            key_id_t key = tty_key();
             if (key != KEY_NONE) {
                 game_key(key);
             }

@@ -1,19 +1,51 @@
+#include <stdlib.h>
 #include <signal.h>
+#include "tetromino.h"
 #include "tty.h"
 #include "draw.h"
 #include "game.h"
+#include "util.h"
 
-unsigned int game_score;
-unsigned int game_lines;
-unsigned int game_level;
+int game_score;
+int game_lines;
+int game_level;
+
 bool game_pressed_space;
 bool game_pressed_left;
 bool game_pressed_up;
 bool game_pressed_right;
 bool game_pressed_down;
+
+tetromino_id_t cur_piece_id;
+tetromino_t * cur_piece;
+char cur_color;
+int cur_line;
+int cur_col;
+
+tetromino_id_t next_piece_id;
 tetromino_t * next_piece;
-unsigned char next_color;
-unsigned char game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
+color_t next_color;
+
+color_t game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
+
+void game_next_piece(void) {
+    cur_piece_id = next_piece_id;
+    cur_piece = next_piece;
+    cur_color = next_color;
+
+    next_piece = util_random_piece(&next_piece_id);
+    next_color = util_random_color();
+
+    cur_line = 0;
+    if (cur_piece->size == 2) {
+        cur_col = 4;
+    } else {
+        cur_col = 3;
+    }
+
+    
+    // TODO: place piece
+}
 
 void game_init(void) {
     game_buffer[5][4] = C_MAGENTA;
@@ -42,7 +74,7 @@ void game_tick(void) {
     game_pressed_space = game_pressed_left = game_pressed_up = game_pressed_down = game_pressed_right = false;
 }
 
-void game_key(int key) {
+void game_key(key_id_t key) {
     switch (key) {
         case KEY_UP:
             game_pressed_up = true;
@@ -61,6 +93,8 @@ void game_key(int key) {
             break;
         case KEY_ESC:
             raise(SIGINT);
+            break;
+        default:
             break;
     }
 }

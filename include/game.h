@@ -2,9 +2,10 @@
 #define TERMTRIS_GAME_H_
 
 #include <stdbool.h>
+#include "tty.h"
 #include "tetromino.h"
 
-enum {
+typedef enum {
     C_NONE = 0,
     C_BLACK = '0',
     C_RED = '1',
@@ -13,27 +14,27 @@ enum {
     C_BLUE = '4',
     C_MAGENTA = '5',
     C_WHITE = '7'
-};
+} color_t;
 
 #define TETRIS_LINES 20
 #define TETRIS_COLUMNS 10
 #define NEXTBOX_LINES 4
 #define NEXTBOX_COLUMNS 4
 
-extern unsigned int game_score;
-extern unsigned int game_lines;
-extern unsigned int game_level;
+extern int game_score;
+extern int game_lines;
+extern int game_level;
 extern bool game_pressed_space;
 extern bool game_pressed_left;
 extern bool game_pressed_up;
 extern bool game_pressed_right;
 extern bool game_pressed_down;
 extern tetromino_t * next_piece;
-extern unsigned char next_color;
-extern unsigned char game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
+extern color_t next_color;
+extern color_t game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
 
 void game_init(void);
 void game_tick(void);
-void game_key(int key);
+void game_key(key_id_t key);
 
 #endif

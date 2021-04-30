@@ -24,7 +24,7 @@ void tty_normal(void) {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &tty_state_old);
 }
 
-int tty_key(void) {
+key_id_t tty_key(void) {
     char c;
     int num;
 
