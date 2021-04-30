@@ -2,6 +2,8 @@
 
 A Terminal Tetris clone written in C and without dependencies.
 
+![termtris screenshot](/screenshots/termtris.png)
+
 ## Compiling
 
 This project is built using `make` and a C compiler.
