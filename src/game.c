@@ -153,7 +153,7 @@ void game_score_update(void) {
     game_lines += num_cleared;
     game_score += score_table[num_cleared] * (game_level + 1);
 
-    if (game_lines - level_start_lines > 10) {
+    if (game_lines - level_start_lines >= 10) {
         game_level++;
         level_start_lines = game_lines;
         if (game_level < MAX_GRAVITY_LEVEL) {
