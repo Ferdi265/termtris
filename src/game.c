@@ -30,6 +30,18 @@ static int cur_col;
 
 static int level_start_lines;
 
+#define MAX_CLEARED 4
+static int num_cleared;
+static int cleared_lines[MAX_CLEARED];
+static int clear_animation_counter;
+
+static int score_table[MAX_CLEARED] = {
+    40,
+    100,
+    300,
+    1200
+};
+
 #define MAX_GRAVITY_LEVEL 29
 static int gravity_table[MAX_GRAVITY_LEVEL + 1] = {
     48,
@@ -66,10 +78,6 @@ static int gravity_table[MAX_GRAVITY_LEVEL + 1] = {
 
 static int cur_gravity;
 static int gravity_counter;
-
-#define MAX_CLEARED 4
-static int num_cleared;
-static int cleared_lines[MAX_CLEARED];
 
 static bool failed;
 
@@ -132,16 +140,7 @@ void game_init(int start_level) {
 #define CLAMP(var, max) var = var > max ? max : var;
 void game_score_update(void) {
     game_lines += num_cleared;
-
-    if (num_cleared == 1) {
-        game_score += 40 * (game_level + 1);
-    } else if (num_cleared == 2) {
-        game_score += 100 * (game_level + 1);
-    } else if (num_cleared == 3) {
-        game_score += 300 * (game_level + 1);
-    } else if (num_cleared == 4) {
-        game_score += 1200 * (game_level + 1);
-    }
+    game_score += score_table[num_cleared] * (game_level + 1);
 
     if (game_lines - level_start_lines > 10) {
         game_level++;
@@ -158,25 +157,46 @@ void game_score_update(void) {
     CLAMP(game_level, 99);
 }
 
-void game_check_clear(void) {
-    num_cleared = util_count_cleared(cleared_lines, MAX_CLEARED);
-}
-
 void game_fail_animation_update(void) {
     // TODO: fail animation
     raise(SIGINT);
 }
 
-void game_clear_animation_update(void) {
-    // TODO: clear animation
+#define LINE_CLEAR_STEPS ((TETRIS_COLUMNS + 1) / 2)
+void game_check_clear(void) {
+    num_cleared = util_count_cleared(cleared_lines, MAX_CLEARED);
+    clear_animation_counter = 2 * LINE_CLEAR_STEPS;
+}
 
-    // shift in reverse order to not invalidate indices
-    for (int i = num_cleared - 1; i >= 0; i--) {
-        util_shift_lines(cleared_lines[i]);
+void game_clear_animation_overwrite(int offset, color_t color) {
+    for (int i = 0; i < num_cleared; i++) {
+        game_buffer[cleared_lines[i]][offset] = color;
+        game_buffer[cleared_lines[i]][TETRIS_COLUMNS - offset - 1] = color;
     }
+}
 
-    game_score_update();
-    num_cleared = 0;
+void game_clear_animation_update(void) {
+    if (clear_animation_counter == 0) {
+        // shift in reverse order to not invalidate indices
+        for (int i = num_cleared - 1; i >= 0; i--) {
+            util_shift_lines(cleared_lines[i]);
+        }
+
+        game_score_update();
+        num_cleared = 0;
+    } else {
+        clear_animation_counter--;
+
+        if (num_cleared == MAX_CLEARED) {
+            if (clear_animation_counter >= LINE_CLEAR_STEPS) {
+                game_clear_animation_overwrite(clear_animation_counter - LINE_CLEAR_STEPS, C_WHITE);
+            } else {
+                game_clear_animation_overwrite(clear_animation_counter, C_NONE);
+            }
+        } else {
+            game_clear_animation_overwrite(clear_animation_counter / 2, C_NONE);
+        }
+    }
 }
 
 void game_controls_update(void) {
