@@ -1,6 +1,8 @@
+#include <stdnoreturn.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
+#include <time.h>
 #include "tty.h"
 #include "loop.h"
 #include "game.h"
@@ -12,9 +14,15 @@ void signal_int(int s) {
     exit(0);
 }
 
-void usage(void) {
+noreturn void usage(void) {
     printf("usage: termtris [start_level]\n");
     exit(1);
+}
+
+void init(void) {
+    signal(SIGINT, signal_int);
+    tty_raw();
+    srand(time(NULL));
 }
 
 int main(int argc, char ** argv) {
@@ -30,8 +38,7 @@ int main(int argc, char ** argv) {
         usage();
     }
 
-    signal(SIGINT, signal_int);
-    tty_raw();
+    init();
     game_init(start_level);
 
     loop();
