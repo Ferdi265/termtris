@@ -35,7 +35,8 @@ static int num_cleared;
 static int cleared_lines[MAX_CLEARED];
 static int clear_animation_counter;
 
-static int score_table[MAX_CLEARED] = {
+static int score_table[MAX_CLEARED + 1] = {
+    0,
     40,
     100,
     300,
@@ -116,6 +117,16 @@ void game_move_piece(int dx, int dy) {
     util_move_piece(cur_piece, &cur_line, &cur_col, cur_color, dx, dy);
 }
 
+void game_move_gravity(void) {
+    if (cur_piece == NULL) {
+        game_next_piece();
+    } else if (util_piece_can_move(cur_piece, cur_line, cur_col, 0, 1)) {
+        game_move_piece(0, 1);
+    } else {
+        cur_piece = NULL;
+    }
+}
+
 void game_init(int start_level) {
     next_piece = util_random_piece(&next_piece_id);
     next_color = util_random_color();
@@ -158,7 +169,6 @@ void game_score_update(void) {
 }
 
 void game_fail_animation_update(void) {
-    // TODO: fail animation
     raise(SIGINT);
 }
 
@@ -213,7 +223,7 @@ void game_controls_update(void) {
     }
 
     if (game_pressed_down) {
-        game_move_piece(0, 1);
+        game_move_gravity();
     }
 }
 
@@ -224,15 +234,7 @@ void game_gravity_update(void) {
     }
 
     gravity_counter = cur_gravity;
-
-    if (cur_piece == NULL) {
-        game_next_piece();
-    } else if (util_piece_can_move(cur_piece, cur_line, cur_col, 0, 1)) {
-        game_move_piece(0, 1);
-    } else {
-        cur_piece = NULL;
-        game_check_clear();
-    }
+    game_move_gravity();
 }
 
 void game_tick(void) {
@@ -243,6 +245,10 @@ void game_tick(void) {
     } else {
         game_controls_update();
         game_gravity_update();
+
+        if (cur_piece == NULL) {
+            game_check_clear();
+        }
     }
 
     draw_update();
