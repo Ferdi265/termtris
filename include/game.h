@@ -2,6 +2,7 @@
 #define TERMTRIS_GAME_H_
 
 #include <stdbool.h>
+#include "tetromino.h"
 
 enum {
     C_NONE = 0,
@@ -27,8 +28,9 @@ extern bool game_pressed_left;
 extern bool game_pressed_up;
 extern bool game_pressed_right;
 extern bool game_pressed_down;
+extern tetromino_t * next_piece;
+extern unsigned char next_color;
 extern unsigned char game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
-extern unsigned char next_buffer[NEXTBOX_LINES][NEXTBOX_COLUMNS];
 
 void game_init(void);
 void game_tick(void);

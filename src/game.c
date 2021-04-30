@@ -11,8 +11,9 @@ bool game_pressed_left;
 bool game_pressed_up;
 bool game_pressed_right;
 bool game_pressed_down;
+tetromino_t * next_piece;
+unsigned char next_color;
 unsigned char game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
-unsigned char next_buffer[NEXTBOX_LINES][NEXTBOX_COLUMNS];
 
 void game_init(void) {
     game_buffer[5][4] = C_MAGENTA;
@@ -25,10 +26,8 @@ void game_init(void) {
     game_buffer[3][2] = C_BLUE;
     game_buffer[4][2] = C_BLUE;
 
-    next_buffer[1][1] = C_GREEN;
-    next_buffer[1][2] = C_GREEN;
-    next_buffer[2][0] = C_GREEN;
-    next_buffer[2][1] = C_GREEN;
+    next_piece = &tetromino_shapes[TETROMINO_S][0];
+    next_color = C_GREEN;
 
     game_score = 777777;
     game_lines = 42;

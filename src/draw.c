@@ -165,11 +165,24 @@ void draw_update(void) {
         }
     }
 
+    char color = next_color;
+    int start_line = 0, start_col = 0;
+    if (next_piece->size == 2) {
+        start_line = 1;
+        start_col = 1;
+    }
     for (int line = 0; line < NEXTBOX_LINES; line++) {
         for (int col = 0; col < NEXTBOX_COLUMNS; col++) {
             char * ptr = draw_next_offset + line * LEN_NB_LINE + NB_LINE_OFFSET + col * LEN_BLOCK + BLOCK_OFFSET;
-            char color = next_buffer[line][col];
-            if (color == 0) {
+
+            bool has_block;
+            if (line < start_line || col < start_col) {
+                has_block = false;
+            } else {
+                has_block = next_piece->blocks[line - start_line][col - start_col];
+            }
+
+            if (!has_block) {
                 ptr[0] = '0';
                 ptr[1] = '0';
             } else {
