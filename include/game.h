@@ -29,6 +29,7 @@ extern bool game_pressed_left;
 extern bool game_pressed_up;
 extern bool game_pressed_right;
 extern bool game_pressed_down;
+extern tetromino_id_t next_piece_id;
 extern tetromino_t * next_piece;
 extern color_t next_color;
 extern color_t game_buffer[TETRIS_LINES][TETRIS_COLUMNS];

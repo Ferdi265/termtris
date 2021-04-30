@@ -42,16 +42,16 @@ char draw_buffer[
 
 #define APPEND(p, s, l) do { memcpy(p, s, l); p += l; } while (0)
 #define REPEAT(n, ...) for (int i = 0; i < n; i++) __VA_ARGS__
-char * draw_game_offset;
-char * draw_next_offset;
-char * draw_score_offset;
-char * draw_lines_offset;
-char * draw_level_offset;
-char * draw_space_offset;
-char * draw_left_offset;
-char * draw_up_offset;
-char * draw_down_offset;
-char * draw_right_offset;
+static char * draw_game_offset;
+static char * draw_next_offset;
+static char * draw_score_offset;
+static char * draw_lines_offset;
+static char * draw_level_offset;
+static char * draw_space_offset;
+static char * draw_left_offset;
+static char * draw_up_offset;
+static char * draw_down_offset;
+static char * draw_right_offset;
 void draw_init(void) {
     char * ptr = draw_buffer;
     APPEND(ptr, "\x1b[2J\x1b[0;0H", LEN_CLEAR);

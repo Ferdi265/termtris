@@ -2,7 +2,7 @@
 #include <termios.h>
 #include "tty.h"
 
-struct termios tty_state_old;
+static struct termios tty_state_old;
 
 void tty_raw(void) {
     struct termios state;

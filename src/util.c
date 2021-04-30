@@ -59,9 +59,9 @@ bool util_piece_can_move(tetromino_t * piece, int line, int col, int dx, int dy)
                 )
             ) {
                 if (
-                    line + cur_line < 0 || line + cur_line >= TETRIS_LINES ||
-                    col + cur_col < 0 || col + cur_col >= TETRIS_COLUMNS ||
-                    game_buffer[line + cur_line][col + cur_col] != C_NONE
+                    line + cur_line + dy < 0 || line + cur_line + dy >= TETRIS_LINES ||
+                    col + cur_col + dx < 0 || col + cur_col + dx >= TETRIS_COLUMNS ||
+                    game_buffer[line + cur_line + dy][col + cur_col + dx] != C_NONE
                 ) {
                     return false;
                 }

@@ -3,6 +3,9 @@
 
 struct timeval time_timeout;
 
+static long long time_rate = 16666;
+static long long time_now;
+
 long long time_usec(void) {
     struct timeval time;
     gettimeofday(&time, NULL);
@@ -10,9 +13,6 @@ long long time_usec(void) {
     return time.tv_sec * 1000000LL + time.tv_usec;
 }
 
-long long time_rate = 16666;
-long long time_now;
-struct timeval time_timeout;
 bool time_update_timeout(void) {
     long long now = time_usec();
     long long diff = now - time_now;
