@@ -4,10 +4,11 @@ CC = gcc
 CSTD = -std=gnu11
 CWARN = -Wall -Wextra
 COPT = -Os
-CFLAGS = $(CSTD) $(CWARN) $(COPT)
+CINC = -Iinclude/
+CFLAGS = $(CSTD) $(CWARN) $(COPT) $(CINC)
 
 TARGET = termtris
-SOURCES = $(wildcard *.c)
+SOURCES = $(wildcard src/*.c)
 
 .PHONY: all clean
 
