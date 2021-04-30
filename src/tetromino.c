@@ -1,6 +1,6 @@
 #include "tetromino.h"
 
-tetromino_t tetromino_shapes[7][4] = {
+tetromino_t tetromino_shapes[NUM_TETROMINOS][NUM_ROTATIONS] = {
     [TETROMINO_I] = {
         {
             .blocks = {
