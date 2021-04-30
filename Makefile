@@ -10,9 +10,12 @@ CFLAGS = $(CSTD) $(CWARN) $(COPT) $(CINC)
 TARGET = termtris
 SOURCES = $(wildcard src/*.c)
 
-.PHONY: all clean
+.PHONY: all debug clean
 
 all: $(TARGET)
+
+debug:
+	$(MAKE) COPT="-Og -g"
 
 clean:
 	rm -f $(TARGET)
