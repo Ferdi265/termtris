@@ -4,9 +4,13 @@
 #include "game.h"
 #include "tetromino.h"
 
-tetromino_t * util_random_piece(tetromino_id_t * id) {
-    unsigned int shape = rand() % NUM_TETROMINOS;
+tetromino_t * util_random_piece(tetromino_id_t * id, unsigned char last_shape) {
+    unsigned int shape = rand() % (NUM_TETROMINOS + 1);
     unsigned int rotation = rand() % NUM_ROTATIONS;
+
+    if (shape == last_shape || shape == NUM_TETROMINOS) {
+        shape = rand() % NUM_TETROMINOS;
+    }
 
     if (id != NULL) {
         id->shape = shape;

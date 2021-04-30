@@ -89,7 +89,7 @@ void game_next_piece(void) {
     cur_piece = next_piece;
     cur_color = next_color;
 
-    next_piece = util_random_piece(&next_piece_id);
+    next_piece = util_random_piece(&next_piece_id, cur_piece_id.shape);
     next_color = util_random_color();
 
     cur_line = 0;
@@ -128,7 +128,7 @@ void game_move_gravity(void) {
 }
 
 void game_init(int start_level) {
-    next_piece = util_random_piece(&next_piece_id);
+    next_piece = util_random_piece(&next_piece_id, NUM_TETROMINOS);
     next_color = util_random_color();
     game_next_piece();
 

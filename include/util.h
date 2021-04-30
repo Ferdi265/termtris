@@ -5,7 +5,7 @@
 #include "tetromino.h"
 #include "game.h"
 
-tetromino_t * util_random_piece(tetromino_id_t * id);
+tetromino_t * util_random_piece(tetromino_id_t * id, unsigned char last_shape);
 color_t util_random_color(void);
 
 int util_center_piece(tetromino_t * piece);
