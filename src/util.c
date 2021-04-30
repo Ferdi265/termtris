@@ -135,6 +135,7 @@ int util_count_cleared(int * cleared_lines, int max_cleared) {
 
         if (cleared) {
             *cleared_lines = line;
+            cleared_lines++;
             num_cleared++;
 
             if (num_cleared >= max_cleared) {
@@ -147,7 +148,7 @@ int util_count_cleared(int * cleared_lines, int max_cleared) {
 }
 
 void util_shift_lines(int cleared_line) {
-    int num_shifted = cleared_line - 1;
-    memmove(game_buffer[1], game_buffer[0], num_shifted);
-    memset(game_buffer[0], C_NONE, num_shifted);
+    int num_shifted = cleared_line;
+    memmove(game_buffer[1], game_buffer[0], num_shifted * TETRIS_COLUMNS);
+    memset(game_buffer[0], C_NONE, TETRIS_COLUMNS);
 }

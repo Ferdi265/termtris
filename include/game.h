@@ -5,7 +5,7 @@
 #include "tty.h"
 #include "tetromino.h"
 
-typedef enum {
+enum {
     C_NONE = 0,
     C_BLACK = '0',
     C_RED = '1',
@@ -14,7 +14,8 @@ typedef enum {
     C_BLUE = '4',
     C_MAGENTA = '5',
     C_WHITE = '7'
-} color_t;
+};
+typedef unsigned char color_t;
 
 #define TETRIS_LINES 20
 #define TETRIS_COLUMNS 10
