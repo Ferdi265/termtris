@@ -1,8 +1,7 @@
 #include "tetromino.h"
 
 tetromino_t tetromino_shapes[7][4] = {
-    // I
-    {
+    [TETROMINO_I] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
@@ -40,8 +39,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 4
         },
     },
-    // O
-    {
+    [TETROMINO_O] = {
         {
             .blocks = {
                 { 1, 1, 0, 0 },
@@ -79,8 +77,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 2
         },
     },
-    // T
-    {
+    [TETROMINO_T] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
@@ -118,8 +115,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 3
         },
     },
-    // L
-    {
+    [TETROMINO_L] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
@@ -157,8 +153,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 3
         },
     },
-    // J
-    {
+    [TETROMINO_J] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
@@ -196,8 +191,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 3
         },
     },
-    // S
-    {
+    [TETROMINO_S] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
@@ -235,8 +229,7 @@ tetromino_t tetromino_shapes[7][4] = {
             .size = 3
         },
     },
-    // Z
-    {
+    [TETROMINO_Z] = {
         {
             .blocks = {
                 { 0, 0, 0, 0 },
