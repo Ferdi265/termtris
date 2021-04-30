@@ -105,16 +105,20 @@ void util_place_piece(tetromino_t * piece, int line, int col, color_t color) {
     }
 }
 
-void util_move_piece(tetromino_t * piece, int line, int col, color_t color, int dx, int dy) {
-    util_erase_piece(piece, line, col);
-    util_place_piece(piece, line + dy, col + dx, color);
+void util_move_piece(tetromino_t * piece, int * line, int * col, color_t color, int dx, int dy) {
+    util_erase_piece(piece, *line, *col);
+    util_place_piece(piece, *line + dy, *col + dx, color);
+    *line += dy;
+    *col += dx;
 }
 
-tetromino_t * util_rotate_piece(tetromino_t * piece, int line, int col, color_t color, tetromino_id_t id) {
-    tetromino_t * rotated_piece = &tetromino_shapes[id.shape][(id.rotation + 1) % NUM_ROTATIONS];
-    util_erase_piece(piece, line, col);
+void util_rotate_piece(tetromino_t ** piece, int line, int col, color_t color, tetromino_id_t * id) {
+    tetromino_id_t rotated_id = { .shape = id->shape, .rotation = (id->rotation + 1) % NUM_ROTATIONS };
+    tetromino_t * rotated_piece = &tetromino_shapes[rotated_id.shape][rotated_id.rotation];
+    util_erase_piece(*piece, line, col);
     util_place_piece(rotated_piece, line, col, color);
-    return rotated_piece;
+    *id = rotated_id;
+    *piece = rotated_piece;
 }
 
 int util_count_cleared(int * cleared_lines, int max_cleared) {
