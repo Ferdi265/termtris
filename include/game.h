@@ -35,7 +35,7 @@ extern tetromino_t * next_piece;
 extern color_t next_color;
 extern color_t game_buffer[TETRIS_LINES][TETRIS_COLUMNS];
 
-void game_init(void);
+void game_init(int start_level);
 void game_tick(void);
 void game_key(key_id_t key);
 

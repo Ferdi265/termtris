@@ -28,6 +28,42 @@ static color_t cur_color;
 static int cur_line;
 static int cur_col;
 
+static int level_start_lines;
+
+#define MAX_GRAVITY_LEVEL 29
+static int gravity_table[MAX_GRAVITY_LEVEL + 1] = {
+    48,
+    43,
+    38,
+    33,
+    28,
+    23,
+    18,
+    13,
+    8,
+    6,
+    5,
+    5,
+    5,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+};
+
 static int cur_gravity;
 static int gravity_counter;
 
@@ -72,20 +108,54 @@ void game_move_piece(int dx, int dy) {
     util_move_piece(cur_piece, &cur_line, &cur_col, cur_color, dx, dy);
 }
 
-void game_init(void) {
+void game_init(int start_level) {
     next_piece = util_random_piece(&next_piece_id);
     next_color = util_random_color();
     game_next_piece();
 
     game_score = 0;
     game_lines = 0;
-    game_level = 1;
+    game_level = start_level;
+    level_start_lines = 0;
 
-    cur_gravity = 30;
+    if (game_level < MAX_GRAVITY_LEVEL) {
+        cur_gravity = gravity_table[game_level];
+    } else {
+        cur_gravity = gravity_table[MAX_GRAVITY_LEVEL];
+    }
     gravity_counter = cur_gravity;
 
     draw_init();
     draw_update();
+}
+
+#define CLAMP(var, max) var = var > max ? max : var;
+void game_score_update(void) {
+    game_lines += num_cleared;
+
+    if (num_cleared == 1) {
+        game_score += 40 * (game_level + 1);
+    } else if (num_cleared == 2) {
+        game_score += 100 * (game_level + 1);
+    } else if (num_cleared == 3) {
+        game_score += 300 * (game_level + 1);
+    } else if (num_cleared == 4) {
+        game_score += 1200 * (game_level + 1);
+    }
+
+    if (game_lines - level_start_lines > 10) {
+        game_level++;
+        level_start_lines = game_lines;
+        if (game_level < MAX_GRAVITY_LEVEL) {
+            cur_gravity = gravity_table[game_level];
+        } else {
+            cur_gravity = gravity_table[MAX_GRAVITY_LEVEL];
+        }
+    }
+
+    CLAMP(game_score, 999999);
+    CLAMP(game_lines, 999);
+    CLAMP(game_level, 99);
 }
 
 void game_check_clear(void) {
@@ -105,6 +175,7 @@ void game_clear_animation_update(void) {
         util_shift_lines(cleared_lines[i]);
     }
 
+    game_score_update();
     num_cleared = 0;
 }
 
