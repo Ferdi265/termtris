@@ -37,14 +37,27 @@ void game_next_piece(void) {
     next_color = util_random_color();
 
     cur_line = 0;
-    if (cur_piece->size == 2) {
-        cur_col = 4;
-    } else {
-        cur_col = 3;
-    }
+    cur_col = util_center_piece(cur_piece);
 
-    
-    // TODO: place piece
+    if (!util_piece_fits(cur_piece, cur_line, cur_col)) {
+        cur_piece = NULL;
+    } else {
+        util_place_piece(cur_piece, cur_line, cur_col, cur_color);
+    }
+}
+
+void game_rotate_piece(void) {
+    if (cur_piece == NULL) return;
+    if (!util_piece_can_rotate(cur_piece, cur_line, cur_col, cur_piece_id)) return;
+
+    util_rotate_piece(cur_piece, cur_line, cur_col, cur_color, cur_piece_id);
+}
+
+void game_move_piece(int dx, int dy) {
+    if (cur_piece == NULL) return;
+    if (!util_piece_can_move(cur_piece, cur_line, cur_col, dx, dy)) return;
+
+    util_move_piece(cur_piece, cur_line, cur_col, cur_color, dx, dy);
 }
 
 void game_init(void) {

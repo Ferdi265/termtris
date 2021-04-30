@@ -12,8 +12,8 @@ typedef struct {
 } tetromino_t;
 
 typedef struct {
-    char shape;
-    char rotation;
+    unsigned char shape;
+    unsigned char rotation;
 } tetromino_id_t;
 
 enum {
