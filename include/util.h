@@ -8,7 +8,8 @@
 tetromino_t * util_random_piece(tetromino_id_t * id, unsigned char last_shape);
 color_t util_random_color(void);
 
-int util_center_piece(tetromino_t * piece);
+int util_top_align_piece(tetromino_t * piece);
+int util_center_align_piece(tetromino_t * piece);
 bool util_piece_fits(tetromino_t * piece, int line, int col);
 bool util_piece_can_move(tetromino_t * piece, int line, int col, int dx, int dy);
 bool util_piece_can_rotate(tetromino_t * piece, int line, int col, tetromino_id_t id);

@@ -26,7 +26,25 @@ color_t util_random_color(void) {
     return color + '1';
 }
 
-int util_center_piece(tetromino_t * piece) {
+int util_top_align_piece(tetromino_t * piece) {
+    for (int cur_line = 0; cur_line < TETROMINO_LINES; cur_line++) {
+        bool empty = true;
+        for (int cur_col = 0; cur_col < TETROMINO_COLUMNS; cur_col++) {
+            if (piece->blocks[cur_line][cur_col]) {
+                empty = false;
+                break;
+            }
+        }
+
+        if (!empty) {
+            return -cur_line;
+        }
+    }
+
+    return 0;
+}
+
+int util_center_align_piece(tetromino_t * piece) {
     if (piece->size == 2) {
         return TETRIS_COLUMNS / 2 - 1;
     } else {

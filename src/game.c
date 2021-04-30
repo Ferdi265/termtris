@@ -92,8 +92,8 @@ void game_next_piece(void) {
     next_piece = util_random_piece(&next_piece_id, cur_piece_id.shape);
     next_color = util_random_color();
 
-    cur_line = 0;
-    cur_col = util_center_piece(cur_piece);
+    cur_line = util_top_align_piece(cur_piece);;
+    cur_col = util_center_align_piece(cur_piece);
 
     if (!util_piece_fits(cur_piece, cur_line, cur_col)) {
         cur_piece = NULL;
