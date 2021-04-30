@@ -110,10 +110,11 @@ void util_move_piece(tetromino_t * piece, int line, int col, color_t color, int 
     util_place_piece(piece, line + dy, col + dx, color);
 }
 
-void util_rotate_piece(tetromino_t * piece, int line, int col, color_t color, tetromino_id_t id) {
+tetromino_t * util_rotate_piece(tetromino_t * piece, int line, int col, color_t color, tetromino_id_t id) {
     tetromino_t * rotated_piece = &tetromino_shapes[id.shape][(id.rotation + 1) % NUM_ROTATIONS];
     util_erase_piece(piece, line, col);
     util_place_piece(rotated_piece, line, col, color);
+    return rotated_piece;
 }
 
 int util_count_cleared(int * cleared_lines, int max_cleared) {

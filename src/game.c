@@ -62,7 +62,7 @@ void game_rotate_piece(void) {
     if (cur_piece == NULL) return;
     if (!util_piece_can_rotate(cur_piece, cur_line, cur_col, cur_piece_id)) return;
 
-    util_rotate_piece(cur_piece, cur_line, cur_col, cur_color, cur_piece_id);
+    cur_piece = util_rotate_piece(cur_piece, cur_line, cur_col, cur_color, cur_piece_id);
 }
 
 void game_move_piece(int dx, int dy) {
@@ -123,7 +123,9 @@ void game_controls_update(void) {
         game_move_piece(1, 0);
     }
 
-    // TODO: fast fall
+    if (game_pressed_down) {
+        game_move_piece(0, 1);
+    }
 }
 
 void game_gravity_update(void) {
