@@ -117,16 +117,6 @@ void game_move_piece(int dx, int dy) {
     util_move_piece(cur_piece, &cur_line, &cur_col, cur_color, dx, dy);
 }
 
-void game_move_gravity(void) {
-    if (cur_piece == NULL) {
-        game_next_piece();
-    } else if (util_piece_can_move(cur_piece, cur_line, cur_col, 0, 1)) {
-        game_move_piece(0, 1);
-    } else {
-        cur_piece = NULL;
-    }
-}
-
 void game_init(int start_level) {
     next_piece = util_random_piece(&next_piece_id, NUM_TETROMINOS);
     next_color = util_random_color();
@@ -221,20 +211,26 @@ void game_controls_update(void) {
     if (game_pressed_right) {
         game_move_piece(1, 0);
     }
-
-    if (game_pressed_down) {
-        game_move_gravity();
-    }
 }
 
 void game_gravity_update(void) {
     if (gravity_counter > 0) {
         gravity_counter--;
-        return;
+
+        // do gravity move anyway if soft-falling
+        if (!game_pressed_down) return;
+    } else {
+        gravity_counter = cur_gravity;
     }
 
-    gravity_counter = cur_gravity;
-    game_move_gravity();
+    if (cur_piece == NULL) {
+        game_next_piece();
+    } else if (util_piece_can_move(cur_piece, cur_line, cur_col, 0, 1)) {
+        game_move_piece(0, 1);
+    } else {
+        cur_piece = NULL;
+        game_check_clear();
+    }
 }
 
 void game_tick(void) {
@@ -245,10 +241,6 @@ void game_tick(void) {
     } else {
         game_controls_update();
         game_gravity_update();
-
-        if (cur_piece == NULL) {
-            game_check_clear();
-        }
     }
 
     draw_update();
